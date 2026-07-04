@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Clock</title>
+
+  <style>
+    /* -------------------------------------------------
+       BASIC PAGE STYLING
+       This removes default spacing and sets font
+    ------------------------------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    /* -------------------------------------------------
+       BODY SECTION
+       Here I designed the full page background.
+       I used a dark futuristic gradient background
+       to match the digital / neon clock theme.
+    ------------------------------------------------- */
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at top left, rgba(0,180,255,0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(255,0,180,0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(150,0,255,0.18), transparent 30%),
+        linear-gradient(135deg, #050816, #0a1030, #09061a);
+      color: white;
+    }
+
+    /* -------------------------------------------------
+       FALLING NEON LINES
+       These lines are added only for background effect
+       to make the page look more futuristic.
+    ------------------------------------------------- */
+    .line {
+      position: absolute;
+      width: 3px;
+      border-radius: 10px;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+
+    .line1 {
+      height: 160px;
+      left: 12%;
+      top: -20%;
+      background: linear-gradient(to bottom, transparent, #ff4fd8, #8f5bff);
+      animation-duration: 7s;
+    }
+
+    .line2 {
+      height: 120px;
+      left: 25%;
+      top: -15%;
+      background: linear-gradient(to bottom, transparent, #00d9ff, #8f5bff);
+      animation-duration: 9s;
+    }
+
+    .line3 {
+      height: 180px;
+      right: 20%;
+      top: -25%;
+      background: linear-gradient(to bottom, transparent, #ff4fd8, #00d9ff);
+      animation-duration: 8s;
+    }
+
+    .line4 {
+      height: 130px;
+      right: 10%;
+      top: -10%;
+      background: linear-gradient(to bottom, transparent, #b84dff, #ff4fd8);
+      animation-duration: 6s;
+    }
+
+    .line5 {
+      height: 100px;
+      left: 45%;
+      top: -10%;
+      background: linear-gradient(to bottom, transparent, #00d9ff, #ff4fd8);
+      animation-duration: 10s;
+    }
+
+    /* Animation for falling lines */
+    @keyframes fall {
+      0% { transform: translateY(-100px); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(120vh); opacity: 0; }
+    }
+
+    /* -------------------------------------------------
+       GLOWING DOTS
+       These small dots are just decorative background
+       elements to make the UI look stylish.
+    ------------------------------------------------- */
+    .dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    .dot1 { top: 18%; left: 18%; background: #ff4fd8; box-shadow: 0 0 15px #ff4fd8; }
+    .dot2 { top: 30%; right: 22%; background: #00d9ff; box-shadow: 0 0 15px #00d9ff; }
+    .dot3 { bottom: 18%; left: 25%; background: #b84dff; box-shadow: 0 0 15px #b84dff; }
+    .dot4 { bottom: 28%; right: 18%; background: #ff4fd8; box-shadow: 0 0 15px #ff4fd8; }
+    .dot5 { top: 50%; left: 8%; background: #00d9ff; box-shadow: 0 0 15px #00d9ff; }
+
+    /* Animation for glowing dots */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.5); opacity: 1; }
+    }
+
+    /* -------------------------------------------------
+       BLURRED GLOW CIRCLES
+       These circles create a soft neon light effect
+       behind the clock container.
+    ------------------------------------------------- */
+    .glow1, .glow2, .glow3 {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    .glow1 {
+      width: 250px;
+      height: 250px;
+      background: #ff4fd8;
+      top: 10%;
+      left: 10%;
+    }
+
+    .glow2 {
+      width: 220px;
+      height: 220px;
+      background: #00d9ff;
+      bottom: 10%;
+      right: 12%;
+    }
+
+    .glow3 {
+      width: 180px;
+      height: 180px;
+      background: #8f5bff;
+      top: 45%;
+      right: 30%;
+    }
+
+    /* -------------------------------------------------
+       CLOCK CONTAINER
+       This is the main box that contains:
+       - clock title
+       - time
+       - date
+       - 12H / 24H toggle
+    ------------------------------------------------- */
+    .clock-container {
+      position: relative;
+      z-index: 2;
+      width: 390px;
+      padding: 35px 25px;
+      text-align: center;
+      border-radius: 24px;
+      background: rgba(10, 14, 35, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 0 20px rgba(255, 79, 216, 0.18),
+        0 0 35px rgba(0, 217, 255, 0.12);
+      color: white;
+    }
+
+    /* Clock heading */
+    .clock-container h1 {
+      font-size: 30px;
+      margin-bottom: 18px;
+      color: #ffd6f4;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(255, 79, 216, 0.35);
+    }
+
+    /* Time display styling */
+    #clock {
+      font-size: 48px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      margin: 18px 0;
+      color: #ffffff;
+      text-shadow:
+        0 0 8px rgba(255,255,255,0.3),
+        0 0 12px rgba(255,79,216,0.18);
+    }
+
+    /* Date styling */
+    #date {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #d9d8ff;
+      letter-spacing: 1px;
+    }
+
+    /* -------------------------------------------------
+       TOGGLE SECTION
+       This section is used to switch between
+       12-hour format and 24-hour format.
+    ------------------------------------------------- */
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 15px;
+      font-size: 17px;
+      color: #f4d9ff;
+      font-weight: 600;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+    }
+
+    /* Hide default checkbox */
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* Toggle background */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.15);
+      border-radius: 30px;
+      transition: 0.4s;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Small round circle inside toggle */
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.4s;
+      box-shadow: 0 0 10px rgba(255,255,255,0.25);
+    }
+
+    /* When toggle is ON, change background color */
+    input:checked + .slider {
+      background: linear-gradient(45deg, #ff4fd8, #8f5bff, #00d9ff);
+    }
+
+    /* Move circle to right side when checked */
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+
+    /* Text showing current format */
+    #formatStatus {
+      margin-top: 18px;
+      font-size: 16px;
+      color: #ffd6f4;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    BACKGROUND DECORATION ELEMENTS
+    These are used only for visual design.
+    They do not affect the clock logic.
+  -->
+  <div class="glow1"></div>
+  <div class="glow2"></div>
+  <div class="glow3"></div>
+
+  <div class="line line1"></div>
+  <div class="line line2"></div>
+  <div class="line line3"></div>
+  <div class="line line4"></div>
+  <div class="line line5"></div>
+
+  <div class="dot dot1"></div>
+  <div class="dot dot2"></div>
+  <div class="dot dot3"></div>
+  <div class="dot dot4"></div>
+  <div class="dot dot5"></div>
+
+  <!--
+    MAIN CLOCK BOX
+    This section contains:
+    1. Clock title
+    2. Time display
+    3. Date display
+    4. Toggle switch for 12H / 24H
+  -->
+  <div class="clock-container">
+    <h1>Digital Clock</h1>
+
+    <!-- Time will be shown here using JavaScript -->
+    <div id="clock">00:00:00</div>
+
+    <!-- Date will be shown here -->
+    <div id="date">Loading date...</div>
+
+    <!-- Toggle for 12-hour and 24-hour format -->
+    <div class="toggle-container">
+      <span>12H</span>
+
+      <label class="toggle-switch">
+        <input type="checkbox" id="formatToggle">
+        <span class="slider"></span>
+      </label>
+
+      <span>24H</span>
+    </div>
+
+    <!-- This text shows which format is currently active -->
+    <p id="formatStatus">Current Format: 12 Hour</p>
+  </div>
+
+  <script>
+    /* -------------------------------------------------
+       GET HTML ELEMENTS
+       Here I selected the elements that I need to
+       update using JavaScript.
+    ------------------------------------------------- */
+    const clock = document.getElementById("clock");
+    const dateEl = document.getElementById("date");
+    const toggle = document.getElementById("formatToggle");
+    const formatStatus = document.getElementById("formatStatus");
+
+    /* -------------------------------------------------
+       FUNCTION: updateClock()
+       This function:
+       1. Gets current time from system
+       2. Checks whether user selected 12H or 24H
+       3. Formats the time
+       4. Displays current date
+       5. Updates the format status text
+    ------------------------------------------------- */
+    function updateClock() {
+      const now = new Date();
+
+      // Get current hours, minutes and seconds
+      let hours24 = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+
+      // Check if toggle is ON or OFF
+      // ON  -> 24 hour format
+      // OFF -> 12 hour format
+      const is24Hour = toggle.checked;
+
+      let displayHours;
+      let suffix = "";
+
+      if (is24Hour) {
+        // If 24H is selected, directly use system hours
+        displayHours = hours24;
+      } else {
+        // If 12H is selected, convert 24H into 12H format
+        suffix = hours24 >= 12 ? " PM" : " AM";
+        displayHours = hours24 % 12;
+
+        // If result becomes 0, show 12 instead of 0
+        if (displayHours === 0) {
+          displayHours = 12;
+        }
+      }
+
+      // Add leading zero if number is single digit
+      const hh = String(displayHours).padStart(2, "0");
+      const mm = String(minutes).padStart(2, "0");
+      const ss = String(seconds).padStart(2, "0");
+
+      // Display time on screen
+      if (is24Hour) {
+        clock.textContent = `${hh}:${mm}:${ss}`;
+      } else {
+        clock.textContent = `${hh}:${mm}:${ss}${suffix}`;
+      }
+
+      /* -------------------------------------------------
+         DATE SECTION
+         Here I created arrays for day names and month
+         names, then displayed the current date.
+      ------------------------------------------------- */
+      const days = [
+        "Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+      ];
+
+      const months = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+      ];
+
+      dateEl.textContent =
+        `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+      // Update text showing current format
+      if (is24Hour) {
+        formatStatus.textContent = "Current Format: 24 Hour";
+      } else {
+        formatStatus.textContent = "Current Format: 12 Hour";
+      }
+    }
+
+    /* -------------------------------------------------
+       EVENT LISTENER FOR TOGGLE
+       When the user changes the toggle,
+       updateClock() will run again and change format.
+    ------------------------------------------------- */
+    toggle.addEventListener("change", updateClock);
+
+    /* -------------------------------------------------
+       INITIAL CALL
+       This runs the clock immediately when page opens.
+    ------------------------------------------------- */
+    updateClock();
+
+    /* -------------------------------------------------
+       AUTO UPDATE EVERY SECOND
+       setInterval() is used to refresh the clock
+       every 1000 milliseconds = 1 second.
+    ------------------------------------------------- */
+    setInterval(updateClock, 1000);
+  </script>
+
+</body>
+</html>
